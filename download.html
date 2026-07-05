@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>download</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#faf5f0;color:#3d2e2e;font-family:Georgia,Times New Roman,serif;line-height:1.7;overflow-x:hidden}
+.container{max-width:680px;margin:0 auto;padding:50px 28px 80px}
+h1{font-size:2.4em;font-weight:normal;color:#5c3d3d;text-align:center;letter-spacing:-0.5px;animation:fadeIn 1s ease-out}
+h2{font-size:1.3em;font-weight:normal;color:#7a5555;margin:35px 0 12px}
+h2::before{content:'~ ';color:#d4b8b8}
+.logo{text-align:center;font-size:68px;margin-bottom:5px;cursor:default;animation:bounce 2s ease-in-out infinite}
+.logo:hover{animation:wiggle .4s ease-in-out infinite}
+.quiet{color:#a08888;font-size:.95em;text-align:center}
+.btn{display:inline-block;padding:12px 26px;background:#e8d5d5;color:#5c3d3d;text-decoration:none;border-radius:4px;margin:6px;font-size:.95em;transition:all .25s}
+.btn:hover{background:#dcc8c8;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.btn-filled{background:#c4a0a0;color:#fff}
+.btn-filled:hover{background:#b89090}
+.code-block{background:#fdf9f6;border:1px solid #e8dcd5;border-radius:3px;padding:18px 22px;margin:15px 0;font-family:Courier New,Consolas,monospace;font-size:.9em;color:#4a3535;overflow-x:auto;transition:all .3s;position:relative}
+.code-block:hover{border-color:#c4a0a0;box-shadow:0 2px 15px rgba(160,120,120,.1);transform:scale(1.01)}
+.code-block::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,transparent 60%,rgba(255,200,200,.08));pointer-events:none;opacity:0;transition:opacity .3s}
+.code-block:hover::after{opacity:1}
+.cmt{color:#bba8a0}
+.out{color:#8a7060}
+.note{background:#fef9f4;border-left:3px solid #d4b8b8;padding:14px 18px;margin:20px 0;font-size:.95em;color:#6b5555;border-radius:0 3px 3px 0;animation:slideIn .6s ease-out}
+.footer{text-align:center;color:#bba8a0;font-size:.85em;padding:40px 0 20px;border-top:1px solid #e8dcd5;margin-top:50px}
+a{color:#8a5c5c;text-decoration:none;border-bottom:1px dotted #c4a0a0;transition:all .2s}
+a:hover{color:#5c3d3d;border-bottom-style:solid}
+.tag-row{margin:12px 0}
+.tag{display:inline-block;background:#f0e5e0;color:#6b4a4a;padding:3px 10px;margin:3px;font-size:.85em;border-radius:2px;transition:all .2s;cursor:default}
+.tag:hover{background:#e0d0c8;transform:translateY(-2px);box-shadow:0 3px 8px rgba(0,0,0,.06)}
+.scrawl{font-family:Georgia,serif;font-style:italic;color:#a08080}
+.paw-line{text-align:center;color:#ddd0c8;font-size:18px;letter-spacing:10px;margin:15px 0;user-select:none;animation:pawWalk 3s ease-in-out infinite}
+.paw-line:nth-child(2){animation-delay:.5s}
+.paw-line:nth-child(3){animation-delay:1s}
+hr{border:none;border-top:1px solid #e8dcd5;margin:30px 0}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-15px)}to{opacity:1;transform:translateX(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes pawWalk{0%,100%{transform:translateX(0)}50%{transform:translateX(8px)}}
+.float-cat{position:fixed;font-size:40px;opacity:.12;pointer-events:none;animation:floatAround 20s linear infinite;z-index:0}
+@keyframes floatAround{0%{transform:translate(0,0) rotate(0deg)}25%{transform:translate(30px,-20px) rotate(5deg)}50%{transform:translate(-10px,-40px) rotate(-5deg)}75%{transform:translate(-30px,-10px) rotate(3deg)}100%{transform:translate(0,0) rotate(0deg)}}
+.spark{position:fixed;pointer-events:none;font-size:16px;animation:sparkUp 4s ease-in forwards;z-index:0}
+@keyframes sparkUp{0%{opacity:.7;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(.3)}}
+</style></head><body>
+<div class="float-cat" style="top:15%;left:8%">🐱</div><div class="float-cat" style="top:70%;right:6%;animation-delay:-7s;font-size:30px">😺</div><div class="float-cat" style="top:40%;right:12%;animation-delay:-14s;font-size:35px">😸</div><script>
+(function(){
+var emojis=['🐾','💫','🌸','✨','🐱','💕','⭐','🌙'];
+setInterval(function(){
+var s=document.createElement('div');
+s.className='spark';
+s.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+s.style.left=Math.random()*100+'%';
+s.style.top=Math.random()*100+'%';
+s.style.animationDuration=(2+Math.random()*4)+'s';
+s.style.fontSize=(10+Math.random()*20)+'px';
+document.body.appendChild(s);
+setTimeout(function(){s.remove()},5000);
+},2500);
+})();
+</script>
+<div class='container'>
+<h1>download</h1>
+<p class='quiet'>one file and you are in</p>
+
+<div class='code-block'>git clone https://github.com/meowlang/meowlang.git<br>cd meowlang<br>python3 meowlang.py</div>
+
+<div class='note'>
+<b>meowlang.py</b> &mdash; ~50 kb of pure cat magic<br>
+<b>version</b> &mdash; 5.4 (stable, probably)<br>
+<b>license</b> &mdash; mit (do whatever you want)<br>
+<b>python</b> &mdash; 3.8 or newer<br>
+</div>
+
+<h2>or grab it in one line</h2>
+<div class='code-block'>curl -O https://raw.github.com/meowlang/meowlang/main/meowlang.py && python3 meowlang.py</div>
+
+<hr>
+<p><a href='index.html'>&larr; back</a></p>
+</div></body></html>
