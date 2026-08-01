@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>MeowLang Docs</title><style>
+:root{
+--pink:#e88a9a;--pink-light:#f5c0cc;--pink-bg:#fff5f7;--white:#fff;--text:#4a3540;--text-light:#8a6a70;--radius:20px;--shadow:0 4px 24px rgba(232,138,154,.08);--shadow-hover:0 12px 40px rgba(232,138,154,.15);--transition:all .3s cubic-bezier(.175,.885,.32,1.275)
+}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:var(--pink);color:#fff}
+html{scroll-behavior:smooth}
+body{background:var(--pink-bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+body.dark{--pink-bg:#1a0a10;--white:#1e1016;--text:#e0d0d8;--text-light:#a08090;--shadow:0 4px 24px rgba(0,0,0,.3);--shadow-hover:0 12px 40px rgba(0,0,0,.4)}
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,245,247,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--pink-light);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;transition:var(--transition)}
+nav .logo-text{font-size:1.3em;font-weight:700;color:var(--pink);text-decoration:none;display:flex;align-items:center;gap:8px}
+nav .links{display:flex;gap:20px;align-items:center}
+nav .links a{color:var(--text-light);text-decoration:none;font-size:.9em;font-weight:500;transition:var(--transition)}
+nav .links a:hover{color:var(--pink)}
+nav .links .btn-sm{padding:8px 18px;background:var(--pink);color:#fff;border-radius:50px;font-size:.85em;font-weight:600;text-decoration:none;transition:var(--transition)}
+nav .links .btn-sm:hover{background:#f0a0b0;transform:translateY(-1px)}
+.theme-btn{background:none;border:2px solid var(--pink-light);border-radius:50px;padding:6px 12px;cursor:pointer;font-size:1.2em;transition:var(--transition)}
+.theme-btn:hover{border-color:var(--pink)}
+.hero{display:flex;align-items:center;justify-content:center;min-height:90vh;flex-direction:column;position:relative;z-index:2;padding:100px 20px 40px;text-align:center}
+.hero-badge{display:inline-block;padding:6px 16px;background:var(--white);border-radius:50px;font-size:.8em;color:var(--pink);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;border:1px solid var(--pink-light);animation:fadeIn .6s ease-out}
+.hero h1{font-size:clamp(3em,8vw,6em);font-weight:800;color:var(--pink);line-height:1;margin:0;animation:fadeIn .6s ease-out .1s both}
+.hero .subtitle{font-size:clamp(1em,2vw,1.3em);color:var(--text-light);margin:12px 0 30px;animation:fadeIn .6s ease-out .2s both}
+.hero .emoji{font-size:clamp(60px,10vw,100px);animation:float 3s ease-in-out infinite;cursor:default;margin-bottom:10px}
+.hero-buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;animation:fadeIn .6s ease-out .3s both}
+.btn{padding:14px 28px;border-radius:14px;font-size:.95em;font-weight:600;text-decoration:none;transition:var(--transition);letter-spacing:.3px;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--pink),#f0a0b0);color:#fff;box-shadow:0 8px 25px rgba(232,138,154,.3)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 35px rgba(232,138,154,.4)}
+.btn-ghost{background:var(--white);color:var(--pink);border:2px solid var(--pink-light);box-shadow:var(--shadow)}
+.btn-ghost:hover{background:var(--pink-bg);border-color:var(--pink);transform:translateY(-3px);box-shadow:var(--shadow-hover)}
+.section{max-width:1000px;margin:0 auto;padding:60px 24px;position:relative;z-index:2}
+.section h2{font-size:2.2em;color:var(--pink);margin-bottom:15px;font-weight:700}
+.section .lead{color:var(--text-light);font-size:1.1em;max-width:600px;margin-bottom:30px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:20px}
+.card{background:var(--white);border-radius:var(--radius);padding:28px 22px;transition:var(--transition);border:2px solid var(--pink-light);box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--pink),#f0a0b0,var(--pink));transform:scaleX(0);transition:transform .4s}
+.card:hover::before{transform:scaleX(1)}
+.card:hover{transform:translateY(-4px);border-color:var(--pink);box-shadow:var(--shadow-hover)}
+.card .icon{font-size:40px;display:block;margin-bottom:12px}
+.card h3{color:var(--pink);font-size:1.1em;margin-bottom:6px}
+.card p{color:var(--text-light);font-size:.9em;line-height:1.5}
+.code-block{background:var(--white);border:2px solid var(--pink-light);border-radius:var(--radius);padding:18px 22px;margin:12px 0;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.85em;color:var(--text);overflow-x:auto;box-shadow:var(--shadow);position:relative}
+.code-block .lang{position:absolute;top:8px;right:12px;font-size:.7em;color:var(--pink);text-transform:uppercase;letter-spacing:1px}
+.code-block .cmt{color:#c0a0a8}
+.code-block .out{color:#8ab8a0}
+.code-block .kw{color:var(--pink)}
+.footer{text-align:center;padding:40px;color:var(--text-light);font-size:.85em;border-top:2px solid var(--pink-light);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;max-width:1000px;margin:0 auto}
+.footer a{color:var(--pink);text-decoration:none}
+a{color:var(--pink);text-decoration:none}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.floating{position:fixed;pointer-events:none;z-index:0;animation:floatUp 10s ease-in infinite}
+@keyframes floatUp{0%{transform:translateY(100vh) rotate(0deg);opacity:.25}50%{opacity:.4}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
+@media(max-width:600px){nav .links{gap:10px;font-size:.8em}.hero h1{font-size:3em}.grid2{grid-template-columns:1fr}}
+</style></head><body>
+    <script>
+(function(){
+var items=['🐱','😺','😸','😻','🎀','💕','🌸','🐾','✨','💖','🫧','🧶','🍥','🦋','🌷'];
+for(var i=0;i<20;i++){
+var e=document.createElement('div');
+e.className='floating';
+e.textContent=items[Math.floor(Math.random()*items.length)];
+e.style.left=Math.random()*100+'%';
+e.style.fontSize=16+Math.random()*24+'px';
+e.style.animationDelay=Math.random()*10+'s';
+e.style.animationDuration=8+Math.random()*10+'s';
+document.body.appendChild(e);
+}
+})();
+</script><canvas id='trail'></canvas>
+<script>
+(function(){
+var c=document.getElementById('trail');
+var ctx=c.getContext('2d');
+var W,H,mx=-100,my=-100;
+var sparkles=[];
+function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;sparkles.push({x:mx+Math.random()*8-4,y:my+Math.random()*8-4,s:2+Math.random()*5,l:1});});
+function draw(){
+ctx.clearRect(0,0,W,H);
+for(var i=sparkles.length-1;i>=0;i--){
+var s=sparkles[i];s.l-=.018;s.y-=1;
+if(s.l<=0){sparkles.splice(i,1);continue;}
+ctx.fillStyle='rgba(232,138,154,'+s.l*.7+')';
+ctx.beginPath();ctx.arc(s.x,s.y,s.s*s.l,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='rgba(232,138,154,'+s.l*.15+')';
+ctx.beginPath();ctx.arc(s.x,s.y,s.s*s.l*3,0,Math.PI*2);ctx.fill();
+}
+requestAnimationFrame(draw);
+}
+draw();
+})();
+</script><nav>
+<a href='/' class='logo-text'>🐱 MeowLang</a>
+<div class='links'>
+<a href='/guide'>docs</a>
+<a href='/about'>about</a>
+<a href='/download' class='btn-sm'>download</a>
+</div>
+</nav><script>
+(function(){
+var btn=document.createElement('button');
+btn.className='theme-btn';btn.title='toggle theme';
+var saved=localStorage.getItem('meowlang-theme');
+if(saved==='dark'){document.body.classList.add('dark');btn.textContent='☀️';}else{btn.textContent='🌙';}
+btn.onclick=function(){
+document.body.classList.toggle('dark');
+var isDark=document.body.classList.contains('dark');
+btn.textContent=isDark?'☀️':'🌙';
+localStorage.setItem('meowlang-theme',isDark?'dark':'light');
+};
+document.querySelector('nav .links').prepend(btn);
+})();
+</script>
+    <div class='section'>
+    <h2>📖 documentation</h2>
+    <p class='lead'>complete reference for all commands</p>
+    <div class='code-block'>git clone https://github.com/meowlang/meowlang.git<br>cd meowlang<br>python3 meowlang.py</div>
+    <div class='grid2'>
+    <div class='card'><h3>🧠 memory</h3><p>mew +1 · mrr -1 · prr zero · nya → · aww ←</p></div>
+    <div class='card'><h3>📥 i/o & strings</h3><p>meow out · meow_input in · meow_print out · meow_cat concat · meow_len/slice · meow_read/write</p></div>
+    <div class='card'><h3>🧮 math</h3><p>bonk add · yeet sub · boop mul · snip div · bonk? mod · zoom sqr</p></div>
+    <div class='card'><h3>🎮 games</h3><p>meow_game · meow_quiz · meow_rps · meow_coin · meow_dice · meow_slot · meow_hunt · meow_rand</p></div>
+    <div class='card'><h3>🔊 sound</h3><p>meowsnd · angry · trill · purrsnd · hisssnd · bonksnd · yeetsnd · beep · note · melody · wave</p></div>
+    <div class='card'><h3>🔐 crypto</h3><p>hash · encrypt · decrypt · pwdgen · scan</p></div>
+    <div class='card'><h3>🌐 network</h3><p>fetch · search · weather · myip · ping</p></div>
+    <div class='card'><h3>💾 files & db</h3><p>save · load · dbopen · dbset · dbget · csvparse · table · tree · find · grep · watch</p></div>
+    <div class='card'><h3>🛠 utilities</h3><p>date · clock · timer · uuid · b64 · url · jsonp · pick · sort · count · fact · joke · meme</p></div>
+    <div class='card'><h3>🧮 algorithms</h3><p>fib · prime · gcd · lcm · bench · mem · checksum</p></div>
+    <div class='card'><h3>🐱 cat & gfx</h3><p>zoomies · loaf · bap · stretch · groom · knead · scratch · rainbow · matrix</p></div>
+    <div class='card'><h3>🌐 web server</h3><p>route / "text" · port 8080 · server</p></div>
+    </div>
+    </div>
+    <div class='footer'><span>meowlang.online</span><span>MIT License</span></div></body></html>
