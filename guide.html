@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>MeowLang Tutorial</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;color:#f0e0f0;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.7;overflow-x:hidden;min-height:100vh}
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.container{max-width:750px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+h1{font-size:3em;font-weight:800;text-align:center;color:#f8c8d8;text-shadow:0 0 40px rgba(248,200,216,.4);margin-bottom:8px;animation:glow 3s ease-in-out infinite}
+@keyframes glow{0%,100%{text-shadow:0 0 40px rgba(248,200,216,.4)}50%{text-shadow:0 0 80px rgba(248,200,216,.8),0 0 120px rgba(200,160,220,.4)}}
+.logo{text-align:center;font-size:90px;animation:bounce 2s ease-in-out infinite;cursor:default;filter:drop-shadow(0 0 30px rgba(248,200,216,.5))}
+.quiet{color:#c0a0c0;font-size:1.1em;text-align:center}
+.btn{display:inline-block;padding:14px 30px;background:rgba(248,200,216,.12);color:#f0e0f0;text-decoration:none;border-radius:50px;margin:8px;font-size:.95em;border:2px solid rgba(248,200,216,.3);transition:all .3s}
+.btn:hover{background:rgba(248,200,216,.25);border-color:rgba(248,200,216,.6);transform:translateY(-3px);box-shadow:0 10px 30px rgba(248,200,216,.2)}
+.btn-filled{background:linear-gradient(135deg,rgba(248,200,216,.4),rgba(200,160,220,.4));border-color:rgba(248,200,216,.5);color:#fff}
+.code-block{background:rgba(20,12,35,.7);border:2px solid rgba(248,200,216,.15);border-radius:16px;padding:20px 24px;margin:12px 0;font-family:monospace;font-size:.88em;color:#d0b8e0;overflow-x:auto}
+.cmt{color:#8a6a9a}
+.out{color:#a0d8c0}
+.note{background:rgba(248,200,216,.06);border-left:3px solid rgba(248,200,216,.5);padding:16px 20px;margin:20px 0;color:#d8c0e0;border-radius:0 12px 12px 0}
+.footer{text-align:center;color:#8a6a8a;font-size:.85em;padding:40px 0 20px;border-top:1px solid rgba(248,200,216,.1);margin-top:50px}
+a{color:#d0a8e0;text-decoration:none}
+a:hover{color:#f8c8d8}
+.paw-line{text-align:center;color:rgba(248,200,216,.25);font-size:18px;letter-spacing:12px;margin:18px 0}
+h2{color:#f0c8d8;font-size:1.4em;margin:35px 0 15px}
+table{width:100%;border-collapse:collapse;margin:15px 0;font-size:.9em}
+td,th{padding:8px 12px;text-align:left;border-bottom:1px solid rgba(248,200,216,.1)}
+th{color:#f8c8d8}
+td{color:#c8b0d8}
+td:first-child{font-family:monospace;color:#f0c0a0}
+.cat-gallery{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin:25px 0}
+.cat-card{background:rgba(20,12,35,.6);border:2px solid rgba(248,200,216,.15);border-radius:16px;padding:15px;text-align:center;width:140px}
+.cat-card img{border-radius:12px;width:100%}
+.cat-card span{font-size:.85em;color:#c0a0c0}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+</style></head><body>
+<canvas id='w'></canvas>
+<script>
+(function(){
+var c=document.getElementById('w');
+var ctx=c.getContext('2d');
+var W,H,mx=0,my=0,tx=0,ty=0;
+function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+document.addEventListener('mousemove',function(e){tx=e.clientX;ty=e.clientY;});
+document.addEventListener('touchmove',function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY;});
+var grid=[];
+var COLS=60,ROWS=40;
+function initGrid(){
+grid=[];
+var cw=W/COLS,ch=H/ROWS;
+for(var y=0;y<ROWS;y++){
+grid[y]=[];
+for(var x=0;x<COLS;x++){
+grid[y][x]={bx:x*cw+cw/2,by:y*ch+ch/2,ox:x*cw+cw/2,oy:y*ch+ch/2};
+}
+}
+}
+initGrid();window.addEventListener('resize',function(){resize();initGrid();});
+function draw(){
+mx+=(tx-mx)*.08;my+=(ty-my)*.08;
+ctx.clearRect(0,0,W,H);
+var cw=W/COLS,ch=H/ROWS;
+for(var y=0;y<ROWS;y++){
+for(var x=0;x<COLS;x++){
+var p=grid[y][x];
+var dx=mx-p.ox,dy=my-p.oy;
+var dist=Math.sqrt(dx*dx+dy*dy);
+var maxDist=200;
+if(dist<maxDist){
+var force=(1-dist/maxDist);
+force=force*force;
+var angle=Math.atan2(dy,dx);
+p.bx=p.ox-Math.cos(angle)*force*60;
+p.by=p.oy-Math.sin(angle)*force*60;
+}else{
+p.bx+=(p.ox-p.bx)*.1;
+p.by+=(p.oy-p.by)*.1;
+}
+}
+}
+for(var y=0;y<ROWS;y++){
+for(var x=0;x<COLS;x++){
+var p=grid[y][x];
+var alpha=.3+Math.sin(x*.3+y*.2+Date.now()*.002)*.15;
+ctx.fillStyle='rgba(255,180,200,'+alpha+')';
+ctx.fillRect(p.bx-1.5,p.by-1.5,3,3);
+if(x<COLS-1){
+var n=grid[y][x+1];
+ctx.strokeStyle='rgba(255,180,200,'+alpha*.6+')';
+ctx.lineWidth=.6;
+ctx.beginPath();ctx.moveTo(p.bx,p.by);ctx.lineTo(n.bx,n.by);ctx.stroke();
+}
+if(y<ROWS-1){
+var n2=grid[y+1][x];
+ctx.strokeStyle='rgba(255,180,200,'+alpha*.6+')';
+ctx.lineWidth=.6;
+ctx.beginPath();ctx.moveTo(p.bx,p.by);ctx.lineTo(n2.bx,n2.by);ctx.stroke();
+}
+}
+}
+requestAnimationFrame(draw);
+}
+draw();
+})();
+</script>
+<div class='container'>
+<h1>📖 MeowLang Tutorial</h1>
+<p class='quiet'>everything you can do with cat sounds</p>
+<div style='text-align:center;margin:30px 0'><a href='/' class='btn'>home</a><a href='/about' class='btn'>about</a><a href='/download' class='btn'>download</a></div>
+<h2>🚀 Getting Started</h2>
+<div class='code-block'><span class='cmt'># install</span><br>git clone https://github.com/meowlang/meowlang.git && cd meowlang<br>python3 meowlang.py</div>
+<h2>🧠 Memory & Pointer</h2>
+<table><tr><th>Command</th><th>Action</th></tr>
+<tr><td>mew</td><td>+1 to cell</td></tr><tr><td>mrr</td><td>-1 to cell</td></tr><tr><td>prr</td><td>zero cell</td></tr><tr><td>nya</td><td>pointer right</td></tr><tr><td>aww</td><td>pointer left</td></tr></table>
+<h2>📥 I/O</h2>
+<table><tr><th>Command</th><th>Action</th></tr>
+<tr><td>meow</td><td>output cell as number</td></tr><tr><td>mrow</td><td>output cell as ASCII</td></tr><tr><td>paw</td><td>input number</td></tr><tr><td>str TEXT</td><td>write string to memory</td></tr><tr><td>puts</td><td>output string</td></tr><tr><td>yell TEXT</td><td>output literal</td></tr></table>
+<h2>🧮 Math</h2>
+<table><tr><th>Command</th><th>Alias</th><th>Operation</th></tr>
+<tr><td>bonk</td><td>+</td><td>add</td></tr><tr><td>yeet</td><td>-</td><td>subtract</td></tr><tr><td>boop</td><td>*</td><td>multiply</td></tr><tr><td>snip</td><td>/</td><td>divide</td></tr><tr><td>bonk?</td><td>%</td><td>modulo</td></tr><tr><td>zoom</td><td>**</td><td>square</td></tr></table>
+<h2>🔁 Loops</h2>
+<div class='code-block'><span class='cmt'>// countdown from 5</span><br>mew mew mew mew mew<br>purr meow mrr hiss<br><span class='out'>→ 5 4 3 2 1</span></div>
+<h2>🤔 Conditions</h2>
+<table><tr><th>Command</th><th>Action</th></tr>
+<tr><td>sniff</td><td>a == b</td></tr><tr><td>pounce</td><td>a > b</td></tr><tr><td>hide</td><td>a < b</td></tr><tr><td>not</td><td>invert</td></tr><tr><td>and/or</td><td>logical</td></tr><tr><td>if/else/endif</td><td>branching</td></tr></table>
+<h2>📦 Variables & Dicts</h2>
+<table><tr><th>Command</th><th>Action</th></tr>
+<tr><td>var X N</td><td>create variable</td></tr><tr><td>set/get/print</td><td>store/load/output</td></tr><tr><td>dict/dictset/dictget</td><td>dictionaries</td></tr></table>
+<h2>🔧 Functions</h2>
+<div class='code-block'><span class='cmt'>// define</span><br>func double<br>&nbsp;&nbsp;blep nya bonk aww<br>endfunc<br><span class='cmt'>// call</span><br>mew mew mew call double meow<br><span class='out'>→ 6</span></div>
+<h2>🔊 Sound</h2>
+<table><tr><th>Command</th><th>Sound</th></tr>
+<tr><td>meowsnd</td><td>realistic meow</td></tr><tr><td>angry</td><td>angry meow</td></tr><tr><td>trill</td><td>prrrrt</td></tr><tr><td>purrsnd</td><td>purring</td></tr><tr><td>hisssnd</td><td>hissing</td></tr><tr><td>bonksnd/yeetsnd</td><td>bonk/yeet</td></tr><tr><td>beep</td><td>tone</td></tr><tr><td>note c</td><td>musical note</td></tr><tr><td>melody cde</td><td>play melody</td></tr><tr><td>wave sine 440</td><td>synth</td></tr></table>
+<h2>🎮 Games</h2>
+<table><tr><th>Command</th><th>Game</th></tr>
+<tr><td>coin</td><td>heads/tails</td></tr><tr><td>dice</td><td>roll 1-6</td></tr><tr><td>box</td><td>mystery box</td></tr><tr><td>hunt</td><td>guess mouse</td></tr><tr><td>laser</td><td>reaction test</td></tr><tr><td>rps</td><td>rock-paper-scissors</td></tr><tr><td>slot</td><td>slot machine</td></tr></table>
+<h2>🔐 Crypto</h2>
+<table><tr><th>Command</th><th>Action</th></tr>
+<tr><td>hash TEXT</td><td>SHA256</td></tr><tr><td>encrypt/decrypt</td><td>XOR+base64</td></tr><tr><td>pwdgen</td><td>password gen</td></tr><tr><td>scan localhost</td><td>port scan</td></tr></table>
+<h2>🌐 Network</h2>
+<table><tr><th>Command</th><th>Action</th></tr>
+<tr><td>fetch URL</td><td>HTTP GET</td></tr><tr><td>search/weather</td><td>search & weather</td></tr><tr><td>myip/ping</td><td>IP & ping</td></tr><tr><td>tor/anon</td><td>proxy modes</td></tr></table>
+<h2>💾 Files & DB</h2>
+<table><tr><th>Command</th><th>Action</th></tr>
+<tr><td>save/load</td><td>JSON files</td></tr><tr><td>dbopen/dbset/dbget</td><td>SQLite</td></tr><tr><td>tree/size</td><td>file info</td></tr><tr><td>backup/restore</td><td>state save</td></tr></table>
+<h2>🛠 Utilities</h2>
+<table><tr><th>Command</th><th>Action</th></tr>
+<tr><td>date/clock/timer</td><td>time tools</td></tr><tr><td>uuid</td><td>generate UUID</td></tr><tr><td>b64e/b64d</td><td>base64</td></tr><tr><td>urle/urld</td><td>URL encode/decode</td></tr><tr><td>jsonp</td><td>pretty JSON</td></tr><tr><td>pick/sort/count</td><td>data tools</td></tr><tr><td>fact/joke/meme</td><td>fun stuff</td></tr></table>
+<h2>🐱 Cat Behaviors</h2>
+<table><tr><th>Command</th><th>Action</th></tr>
+<tr><td>zoomies</td><td>fast mode</td></tr><tr><td>loaf</td><td>sleep</td></tr><tr><td>bap</td><td>stop program</td></tr><tr><td>stretch</td><td>expand cells</td></tr><tr><td>groom/knead/scratch</td><td>animations</td></tr></table>
+<h2>🎨 Graphics</h2>
+<table><tr><th>Command</th><th>Action</th></tr>
+<tr><td>draw box/circle/text</td><td>ASCII art</td></tr><tr><td>draw show</td><td>render</td></tr><tr><td>rainbow/matrix</td><td>terminal fx</td></tr></table>
+<h2>🌐 Web Server</h2>
+<div class='code-block'><span class='cmt'>// create a website</span><br>route / "hello"<br>route /cats "meow"<br>port 8080<br>server</div>
+<h2>✍️ Programs</h2>
+<div class='code-block'><span class='cmt'>// write inside interpreter</span><br>edit myprog<br>&nbsp;&nbsp;str Hello World! puts<br>&nbsp;&nbsp;end<br>code myprog</div>
+<div class='footer'>🐱 meowlang.online · MIT License</div>
+</div></body></html>
