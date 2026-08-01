@@ -1502,6 +1502,243 @@ class MeowLang:
                 content = tokens[ip]
                 css = f"<style>{content}</style>"
                 output.append(css)
+            elif token == "tree" and ip + 1 < len(tokens):
+                ip += 1; import os as _os
+                path = tokens[ip]
+                try:
+                    items = _os.listdir(path)[:10]
+                    output.append("\n".join(items))
+                except:
+                    output.append("error")
+            elif token == "size" and ip + 1 < len(tokens):
+                ip += 1; import os as _os
+                try:
+                    sz = _os.path.getsize(tokens[ip])
+                    output.append(str(sz) + " bytes")
+                except:
+                    output.append("error")
+            elif token == "backup":
+                import datetime as _dt, json as _js
+                fn = "/tmp/meow_backup_" + _dt.datetime.now().strftime("%Y%m%d_%H%M%S") + ".json"
+                data = {"memory": self.memory[:100], "pointer": self.pointer, "vars": dict(self.variables)}
+                with open(fn, "w") as f: _js.dump(data, f)
+                output.append("saved to " + fn)
+            elif token == "restore" and ip + 1 < len(tokens):
+                ip += 1; import json as _js
+                try:
+                    with open(tokens[ip]) as f: data = _js.load(f)
+                    for j, v in enumerate(data.get("memory", [])[:100]): self.memory[j] = v
+                    self.pointer = data.get("pointer", 0)
+                    self.variables = data.get("vars", {})
+                    output.append("restored")
+                except:
+                    output.append("failed")
+            elif token == "clock":
+                import datetime as _dt, time as _t
+                print("  clock: Ctrl+C to stop")
+                try:
+                    while True:
+                        print("\r  " + _dt.datetime.now().strftime("%H:%M:%S"), end="", flush=True)
+                        _t.sleep(1)
+                except KeyboardInterrupt:
+                    print()
+            elif token == "fact":
+                facts = ["cats sleep 16-20 hours a day","a cat can jump 6 times its body length","cats have over 20 muscles in each ear","the oldest cat lived to 38 years","cats can make over 100 different sounds","a cat was the mayor of an alaskan town for 20 years","cats walk like camels and giraffes","the richest cat inherited $13 million","cats sweat through their paws","a cats purr vibrates at 25-150 Hz"]
+                output.append(random.choice(facts))
+            elif token == "joke":
+                jokes = ["why do cats not play poker? too many cheetahs","what is a cats favorite color? purr-ple","why did the cat sit on the computer? to keep an eye on the mouse","what do you call a cat that loves electronics? a meow-crochip","how do cats end a fight? they hiss and make up"]
+                output.append(random.choice(jokes))
+            elif token == "meme":
+                memes = ["🐱 I CAN HAS CHEEZBURGER?","😺 woman yelling at cat meme activated","🙀 keyboard cat plays you off","😼 grumpy cat says NO","😸 nyan cat goes meowmeowmeowmeow"]
+                output.append(random.choice(memes))
+            elif token == "rainbow" and ip + 1 < len(tokens):
+                ip += 1; text = tokens[ip]
+                colors = ["\033[31m","\033[33m","\033[32m","\033[36m","\033[34m","\033[35m"]
+                for i, ch in enumerate(text):
+                    output.append(colors[i % len(colors)] + ch)
+                output.append("\033[0m")
+            elif token == "matrix":
+                import time as _t
+                cols = 80
+                drops = [0] * (cols // 3)
+                print("  matrix: Ctrl+C to stop")
+                try:
+                    while True:
+                        for i in range(len(drops)):
+                            if drops[i] == 0 and random.random() > 0.95: drops[i] = random.randint(5, 20)
+                            if drops[i] > 0:
+                                ch = random.choice("abcdefghijklmnopqrstuvwxyz0123456789")
+                                print("\033[32m" + ch + "\033[0m", end="", flush=True)
+                                drops[i] -= 1
+                        _t.sleep(0.03)
+                except KeyboardInterrupt:
+                    print()
+            elif token == "slot":
+                symbols = ["🍒","🍋","🍊","🔔","⭐","💎"]
+                a, b, c = random.choice(symbols), random.choice(symbols), random.choice(symbols)
+                output.append("[ " + a + " | " + b + " | " + c + " ]")
+                if a == b == c:
+                    output.append("JACKPOT!")
+                    self.memory[self.pointer] = 255
+                elif a == b or b == c or a == c:
+                    output.append("win!")
+                    self.memory[self.pointer] = 50
+                else:
+                    self.memory[self.pointer] = 0
+            elif token == "groom":
+                frames = ["😺","😸","😽","😻"]
+                import time as _t
+                for f in frames:
+                    print("\r  " + f + " *lick lick*", end="", flush=True)
+                    _t.sleep(0.5)
+                print()
+            elif token == "knead":
+                print("  🐾 making biscuits...", end="", flush=True)
+                import time as _t
+                for _ in range(4):
+                    print(" 🐾", end="", flush=True)
+                    _t.sleep(0.5)
+                print()
+            elif token == "scratch":
+                self.sfx.bonk()
+                surfaces = ["sofa","carpet","scratching post","door","curtain","cardboard box"]
+                output.append("*scratches " + random.choice(surfaces) + "*")
+            elif token == "csvparse" and ip + 1 < len(tokens):
+                ip += 1; path = tokens[ip]
+                try:
+                    with open(path) as f: lines = f.read().strip().split("\n")
+                    for j, line in enumerate(lines[:50]):
+                        vals = line.split(",")
+                        for k, v in enumerate(vals):
+                            idx = self.pointer + j * 10 + k
+                            if idx < MAX_MEMORY:
+                                try: self.memory[idx] = int(v.strip()) % 256
+                                except: self.memory[idx] = 0
+                    output.append("csv: " + str(len(lines)) + " rows")
+                except:
+                    output.append("failed")
+            elif token == "table":
+                rows = self.memory[self.pointer] if self.memory[self.pointer] > 0 else 3
+                cols = self.memory[self.pointer + 1] if self.memory[self.pointer + 1] > 0 else 3
+                start = self.pointer + 2
+                for r in range(rows):
+                    row_data = []
+                    for c in range(cols):
+                        idx = start + r * cols + c
+                        if idx < MAX_MEMORY: row_data.append(str(self.memory[idx]))
+                    output.append(" | ".join(row_data))
+            elif token == "fib":
+                n = self.memory[self.pointer] if self.memory[self.pointer] > 0 else 5
+                a, b = 0, 1
+                for i in range(min(n, 20)):
+                    if self.pointer + i < MAX_MEMORY: self.memory[self.pointer + i] = a % 256
+                    a, b = b, a + b
+                output.append("fib: " + " ".join(str(self.memory[self.pointer + i]) for i in range(min(n, 20))))
+            elif token == "prime":
+                n = self.memory[self.pointer]
+                if n < 2: self.memory[self.pointer] = 0
+                else:
+                    is_p = True
+                    for d in range(2, int(n**0.5) + 1):
+                        if n % d == 0: is_p = False; break
+                    self.memory[self.pointer] = 1 if is_p else 0
+                output.append("prime" if self.memory[self.pointer] else "not prime")
+            elif token == "gcd":
+                a, b = self.memory[self.pointer], self.memory[self.pointer + 1]
+                while b: a, b = b, a % b
+                self.memory[self.pointer] = a % 256
+            elif token == "lcm":
+                a, b = self.memory[self.pointer], self.memory[self.pointer + 1]
+                g, tb = a, b
+                while tb: g, tb = tb, g % tb
+                self.memory[self.pointer] = (a * b // g) % 256 if g else 0
+            elif token == "bench" and ip + 1 < len(tokens):
+                ip += 1; name = tokens[ip]
+                if name in self.programs:
+                    import time as _t
+                    start = _t.time()
+                    self.execute(self.programs[name])
+                    elapsed = _t.time() - start
+                    output.append(str(round(elapsed, 4)) + "s")
+                else:
+                    output.append("not found")
+            elif token == "mem":
+                used = sum(1 for v in self.memory if v != 0)
+                output.append("cells: " + str(used) + " / " + str(MAX_MEMORY))
+            elif token == "checksum" and ip + 1 < len(tokens):
+                ip += 1; path = tokens[ip]
+                try:
+                    import hashlib as _hl
+                    with open(path, "rb") as f: md5 = _hl.md5(f.read()).hexdigest()
+                    output.append(md5[:16])
+                except:
+                    output.append("failed")
+            elif token == "find" and ip + 1 < len(tokens):
+                ip += 1; pattern = tokens[ip]
+                import os as _os
+                found = []
+                for root, dirs, files in _os.walk(_os.path.expanduser("~")):
+                    for f in files:
+                        if pattern in f: found.append(_os.path.join(root, f))
+                        if len(found) >= 5: break
+                    if len(found) >= 5: break
+                output.append("\n".join(found[:5]) if found else "not found")
+            elif token == "grep" and ip + 2 < len(tokens):
+                ip += 1; pattern = tokens[ip]; ip += 1; path = tokens[ip]
+                try:
+                    with open(path) as f: lines = f.readlines()
+                    matches = [str(i+1) + ": " + line.strip()[:50] for i, line in enumerate(lines) if pattern in line]
+                    output.append("\n".join(matches[:5]) if matches else "not found")
+                except:
+                    output.append("failed")
+            elif token == "watch" and ip + 1 < len(tokens):
+                ip += 1; path = tokens[ip]
+                import os as _os, time as _t
+                try:
+                    last = _os.path.getmtime(path)
+                    print("  watching " + path + " (Ctrl+C to stop)")
+                    while True:
+                        _t.sleep(1)
+                        try:
+                            cur = _os.path.getmtime(path)
+                            if cur != last: print("  changed!"); last = cur
+                        except: break
+                except KeyboardInterrupt: print()
+                except: print("  failed")
+            elif token == "post" and ip + 2 < len(tokens):
+                ip += 1; url = tokens[ip]; ip += 1; data = tokens[ip]
+                import urllib.request as _ur
+                try:
+                    req = _ur.Request(url, data=data.encode(), method="POST")
+                    resp = _ur.urlopen(req, timeout=5).read().decode()[:200]
+                    for j, ch in enumerate(resp):
+                        if self.pointer + j < MAX_MEMORY: self.memory[self.pointer + j] = ord(ch) % 256
+                    output.append("posted")
+                except:
+                    output.append("failed")
+            elif token == "download" and ip + 2 < len(tokens):
+                ip += 1; url = tokens[ip]; ip += 1; path = tokens[ip]
+                import urllib.request as _ur
+                try:
+                    data = _ur.urlopen(url, timeout=10).read()
+                    with open(path, "wb") as f: f.write(data)
+                    output.append("dl: " + str(len(data)) + " bytes")
+                except:
+                    output.append("failed")
+            elif token == "meow_csv": tokens[ip] = "csvparse"; ip -= 1
+            elif token == "meow_table": tokens[ip] = "table"; ip -= 1
+            elif token == "meow_fib": tokens[ip] = "fib"; ip -= 1
+            elif token == "meow_prime": tokens[ip] = "prime"; ip -= 1
+            elif token == "meow_gcd": tokens[ip] = "gcd"; ip -= 1
+            elif token == "meow_lcm": tokens[ip] = "lcm"; ip -= 1
+            elif token == "meow_bench": tokens[ip] = "bench"; ip -= 1
+            elif token == "meow_mem": tokens[ip] = "mem"; ip -= 1
+            elif token == "meow_hash": tokens[ip] = "checksum"; ip -= 1
+            elif token == "meow_find": tokens[ip] = "find"; ip -= 1
+            elif token == "meow_grep": tokens[ip] = "grep"; ip -= 1
+            elif token == "meow_watch": tokens[ip] = "watch"; ip -= 1
+            elif token == "meow_post": tokens[ip] = "post"; ip -= 1
+            elif token == "meow_dl": tokens[ip] = "download"; ip -= 1
             elif token == "wipe":
                 os.system("clear")
             elif token == "nap":
